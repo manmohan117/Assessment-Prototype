@@ -68,16 +68,4 @@ After processing the uploaded file, the app generates a report that includes:
 
 ---
 
-## ✅ Getting Started
 
-### Prerequisites
-
-- Python 3.9+
-- `pip` package manager
-
-### Installation
-
-```bash
-git clone https://github.com/yourusername/network-assessment-prototype.git
-cd network-assessment-prototype
-pip install -r requirements.txt
