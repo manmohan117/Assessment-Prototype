@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import type { ProcessedAssessmentArea } from '@/types/assessment';
-import type { GenerateRecommendationsInput, GenerateRecommendationsOutput, RecommendationItem } from '@/ai/flows/generate-recommendations-flow';
+import type { GenerateRecommendationsInput, GenerateRecommendationsOutput } from '@/ai/flows/generate-recommendations-flow';
 import { generateRecommendations } from '@/ai/flows/generate-recommendations-flow';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -68,7 +68,7 @@ export function RecommendationsCard({ processedData }: RecommendationsCardProps)
 
   const getScoreMetadata = (score: number): { variant: "destructive" | "warning" | "accent", label: string, borderColorClass: string } => {
     if (score < 4) return { variant: "destructive", label: "Needs Improvement", borderColorClass: "border-destructive" };
-    if (score < 7) return { variant: "warning", label: "Review Suggested", borderColorClass: "border-yellow-500" }; // Assuming yellow-500 is available or a similar warning color
+    if (score < 7) return { variant: "warning", label: "Review Suggested", borderColorClass: "border-yellow-500" }; 
     return { variant: "accent", label: "Good", borderColorClass: "border-accent" };
   };
 
@@ -93,19 +93,18 @@ export function RecommendationsCard({ processedData }: RecommendationsCardProps)
             const areaState = recommendationsMap.get(area.area);
             const scoreMeta = getScoreMetadata(area.averageScore);
             
-            // Use a custom class for warning badge if not available in theme
             const badgeVariant = scoreMeta.variant === 'warning' ? undefined : scoreMeta.variant;
-            const badgeClass = scoreMeta.variant === 'warning' ? 'bg-yellow-500 text-yellow-900 hover:bg-yellow-500/90' : '';
+            const badgeClass = scoreMeta.variant === 'warning' ? 'bg-yellow-500 text-warning-foreground hover:bg-yellow-500/90' : '';
 
 
             return (
               <AccordionItem value={area.area} key={area.area}>
                 <AccordionTrigger>
-                  <div className="flex items-center justify-between w-full">
-                    <span className="font-medium">{area.area}</span>
-                    <div className="flex items-center space-x-2">
-                       <span className="text-sm text-muted-foreground">Avg: {area.averageScore.toFixed(2)}</span>
-                       <Badge variant={badgeVariant} className={badgeClass}>
+                  <div className="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between w-full gap-1 sm:gap-4">
+                    <span className="font-medium text-left mr-2">{area.area}</span>
+                    <div className="flex items-center space-x-2 self-start sm:self-center">
+                       <span className="text-sm text-muted-foreground whitespace-nowrap">Avg: {area.averageScore.toFixed(2)}</span>
+                       <Badge variant={badgeVariant} className={`${badgeClass} whitespace-nowrap`}>
                          {scoreMeta.label}
                        </Badge>
                     </div>

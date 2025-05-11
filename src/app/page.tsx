@@ -9,7 +9,7 @@ import { FileUploadCard } from '@/components/assessflow/FileUploadCard';
 import { DataDisplayCard } from '@/components/assessflow/DataDisplayCard';
 import { VisualizationCard } from '@/components/assessflow/VisualizationCard';
 import { ExportCard } from '@/components/assessflow/ExportCard';
-import { RecommendationsCard } from '@/components/assessflow/RecommendationsCard'; // Added
+import { RecommendationsCard } from '@/components/assessflow/RecommendationsCard';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,11 +75,12 @@ export default function AssessFlowPage() {
 
     setIsLoading(true);
     setError(null);
-    setParsedData([]);
-    setProcessedData([]);
+    // Keep previous parsedData and processedData visible during loading if desired,
+    // or clear them like this:
+    // setParsedData([]); 
+    // setProcessedData([]);
     setProgress(10);
 
-    // Short delay to ensure UI updates before intensive work
     await new Promise(resolve => setTimeout(resolve, 100));
 
     try {
@@ -87,16 +88,16 @@ export default function AssessFlowPage() {
 
       reader.onload = async (e) => {
         try {
-          setProgress(50); // File reading complete
-          await new Promise(resolve => setTimeout(resolve, 200)); // Simulate parsing time
+          setProgress(50); 
+          await new Promise(resolve => setTimeout(resolve, 200)); 
 
           const text = e.target?.result as string;
           if (!text) {
             throw new Error("File content is empty or could not be read.");
           }
           const parsed = parseCSV(text);
-          setProgress(75); // Parsing complete
-          await new Promise(resolve => setTimeout(resolve, 200)); // Simulate processing time
+          setProgress(75); 
+          await new Promise(resolve => setTimeout(resolve, 200)); 
 
           if (parsed.length === 0) {
             throw new Error("No valid data found in the CSV. Please check the file format and content.");
@@ -105,8 +106,8 @@ export default function AssessFlowPage() {
           
           const processed = processAssessmentData(parsed);
           setProcessedData(processed);
-          setProgress(100); // Processing complete
-           await new Promise(resolve => setTimeout(resolve, 100)); // Short delay for UI to show 100%
+          setProgress(100);
+           await new Promise(resolve => setTimeout(resolve, 100));
 
           toast({
             title: "Assessment Complete",
@@ -120,6 +121,8 @@ export default function AssessFlowPage() {
             description: parseError.message || "An unexpected error occurred.",
             variant: "destructive",
           });
+          setParsedData([]); // Clear data on error
+          setProcessedData([]);
           setProgress(0);
         } finally {
           setIsLoading(false);
@@ -134,12 +137,14 @@ export default function AssessFlowPage() {
             description: "Could not read the uploaded file.",
             variant: "destructive",
           });
+        setParsedData([]); // Clear data on error
+        setProcessedData([]);
         setProgress(0);
         setIsLoading(false);
       };
       
       reader.readAsText(file);
-      setProgress(30); // Reading initiated
+      setProgress(30); 
       
     } catch (err: any) {
       console.error("File processing setup error:", err);
@@ -149,6 +154,8 @@ export default function AssessFlowPage() {
         description: err.message || "An unexpected error occurred.",
         variant: "destructive",
       });
+      setParsedData([]); // Clear data on error
+      setProcessedData([]);
       setProgress(0);
       setIsLoading(false);
     }
@@ -162,15 +169,19 @@ export default function AssessFlowPage() {
         <div className="space-y-8">
           <FileUploadCard 
             onFileSelect={handleFileSelect} 
-            isLoading={isLoading}
             selectedFile={file} 
           />
 
-          {file && !isLoading && (parsedData.length === 0 && processedData.length === 0) && !error && (
+          {file && (
             <Card className="shadow-md">
               <CardContent className="p-6 text-center">
-                <Button onClick={handlePerformAssessment} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <BarChart3 className="mr-2 h-5 w-5" /> Perform Assessment
+                <Button onClick={handlePerformAssessment} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto" disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <BarChart3 className="mr-2 h-5 w-5" />
+                  )}
+                  {isLoading ? "Assessing..." : "Perform Assessment"}
                 </Button>
               </CardContent>
             </Card>
@@ -197,18 +208,18 @@ export default function AssessFlowPage() {
             </Alert>
           )}
 
-          {(parsedData.length > 0 || processedData.length > 0) && !isLoading && !error && (
+          {!isLoading && !error && (parsedData.length > 0 || processedData.length > 0) && (
             <>
               <DataDisplayCard parsedData={parsedData} processedData={processedData} />
               <VisualizationCard processedData={processedData} />
-              <RecommendationsCard processedData={processedData} /> {/* Added */}
+              <RecommendationsCard processedData={processedData} />
               <ExportCard processedData={processedData} />
             </>
           )}
           
           {!file && !isLoading && !error && (
              <Card className="shadow-lg">
-                <CardContent className="p-10 text-center">
+                <CardContent className="p-6 sm:p-10 text-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-spreadsheet mx-auto mb-4 text-muted-foreground"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h1v4"/><path d="M12 13h1v4"/><path d="M16 13h1v4"/><path d="M3 8h18"/></svg>
                   <h3 className="text-xl font-semibold text-foreground mb-2">Welcome to AssessFlow</h3>
                   <p className="text-muted-foreground">Upload your CSV assessment file to get started. Click "Perform Assessment" to visualize scores, identify trends, get recommendations, and export your findings.</p>
@@ -224,4 +235,3 @@ export default function AssessFlowPage() {
     </div>
   );
 }
-
