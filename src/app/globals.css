@@ -29,6 +29,9 @@ body {
     --accent: 145 63% 49%; /* #2ecc71 - green */
     --accent-foreground: 0 0% 100%; /* white */
 
+    --warning: 43 93% 47%; /* yellow-500 eab308 */
+    --warning-foreground: 30 74% 26%; /* yellow-900 713f12 - for text on yellow background */
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
@@ -75,6 +78,9 @@ body {
 
     --accent: 145 63% 49%; /* #2ecc71 - green (can remain same or be adjusted) */
     --accent-foreground: 0 0% 100%; /* white */
+    
+    --warning: 43 93% 55%; /* A bit brighter yellow for dark mode */
+    --warning-foreground: 43 93% 15%; /* Darker text for contrast on yellow */
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;

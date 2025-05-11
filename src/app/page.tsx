@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ import { FileUploadCard } from '@/components/assessflow/FileUploadCard';
 import { DataDisplayCard } from '@/components/assessflow/DataDisplayCard';
 import { VisualizationCard } from '@/components/assessflow/VisualizationCard';
 import { ExportCard } from '@/components/assessflow/ExportCard';
+import { RecommendationsCard } from '@/components/assessflow/RecommendationsCard'; // Added
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -164,7 +166,7 @@ export default function AssessFlowPage() {
             selectedFile={file} 
           />
 
-          {file && !isLoading && (
+          {file && !isLoading && (parsedData.length === 0 && processedData.length === 0) && !error && (
             <Card className="shadow-md">
               <CardContent className="p-6 text-center">
                 <Button onClick={handlePerformAssessment} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -199,6 +201,7 @@ export default function AssessFlowPage() {
             <>
               <DataDisplayCard parsedData={parsedData} processedData={processedData} />
               <VisualizationCard processedData={processedData} />
+              <RecommendationsCard processedData={processedData} /> {/* Added */}
               <ExportCard processedData={processedData} />
             </>
           )}
@@ -208,7 +211,7 @@ export default function AssessFlowPage() {
                 <CardContent className="p-10 text-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-spreadsheet mx-auto mb-4 text-muted-foreground"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h1v4"/><path d="M12 13h1v4"/><path d="M16 13h1v4"/><path d="M3 8h18"/></svg>
                   <h3 className="text-xl font-semibold text-foreground mb-2">Welcome to AssessFlow</h3>
-                  <p className="text-muted-foreground">Upload your CSV assessment file to get started. Click "Perform Assessment" to visualize scores, identify trends, and export your findings.</p>
+                  <p className="text-muted-foreground">Upload your CSV assessment file to get started. Click "Perform Assessment" to visualize scores, identify trends, get recommendations, and export your findings.</p>
                 </CardContent>
               </Card>
           )}
@@ -221,3 +224,4 @@ export default function AssessFlowPage() {
     </div>
   );
 }
+

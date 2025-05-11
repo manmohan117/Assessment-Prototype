@@ -14,6 +14,10 @@ const badgeVariants = cva(
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        warning: // New variant
+          "border-transparent bg-warning text-warning-foreground hover:bg-warning/80",
+        accent: // Using accent for green
+            "border-transparent bg-accent text-accent-foreground hover:bg-accent/80",
         outline: "text-foreground",
       },
     },
