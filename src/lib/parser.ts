@@ -12,6 +12,7 @@ export const parseCSV = (csvText: string): ParsedAssessmentItem[] => {
   const areaHeader = headers.find(h => h.toLowerCase().includes('assessment area'));
   const questionHeader = headers.find(h => h.toLowerCase().includes('question'));
   const scoreHeader = headers.find(h => h.toLowerCase().includes('score'));
+  const recommendationHeader = headers.find(h => h.toLowerCase().includes('recommendation'));
 
   if (!areaHeader || !questionHeader || !scoreHeader) {
     throw new Error("CSV must contain 'Assessment Area', 'Question', and 'Score' columns.");
@@ -38,10 +39,13 @@ export const parseCSV = (csvText: string): ParsedAssessmentItem[] => {
       return;
     }
 
+    const recommendation = recommendationHeader ? (rowData[recommendationHeader] || null) : null;
+
     parsedData.push({
       assessmentArea: rowData[areaHeader],
       question: rowData[questionHeader],
       score: score,
+      recommendation: recommendation,
     });
   });
 
@@ -49,7 +53,7 @@ export const parseCSV = (csvText: string): ParsedAssessmentItem[] => {
 };
 
 export const processAssessmentData = (parsedData: ParsedAssessmentItem[]): ProcessedAssessmentArea[] => {
-  const areaMap: Map<string, { totalScore: number; questions: Array<{ question: string; score: number }> }> = new Map();
+  const areaMap: Map<string, { totalScore: number; questions: Array<{ question: string; score: number; recommendation?: string | null }> }> = new Map();
 
   parsedData.forEach(item => {
     if (!areaMap.has(item.assessmentArea)) {
@@ -57,7 +61,7 @@ export const processAssessmentData = (parsedData: ParsedAssessmentItem[]): Proce
     }
     const areaData = areaMap.get(item.assessmentArea)!;
     areaData.totalScore += item.score;
-    areaData.questions.push({ question: item.question, score: item.score });
+    areaData.questions.push({ question: item.question, score: item.score, recommendation: item.recommendation });
   });
 
   const processedAreas: ProcessedAssessmentArea[] = [];
